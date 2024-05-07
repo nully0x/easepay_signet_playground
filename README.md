@@ -1,2 +1,2 @@
 # easepay_signet_playground
-A Bitcoin Signet playground for testing 
+A Bitcoin Signet playground for testing bitcoin Applications
