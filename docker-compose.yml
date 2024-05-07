@@ -33,7 +33,7 @@ services:
       - miner --cli="bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_ADDR}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
     restart: on-failure
 
-  electrs:
+  fulcrum:
     image: cculianu/fulcrum:latest
     command: --conf /etc/fulcrum.conf
     ports:
