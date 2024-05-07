@@ -1,7 +1,5 @@
 # easepay_signet_playground
-A Bitcoin Signet playground for testing bitcoin Applications
-
-A dockerized, self-contained Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) to study how it works.
+A dockerized, self-contained signet node for testing bitcoin Applications:  Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) to study how it works.
 
 ## Requirements
 
@@ -15,7 +13,7 @@ Docker Compose version v2.25.0
 ## Setup
 
 Start easepay-signet-node, Electrum(fulcrum), MariaDB and MongoDB.
-Since easepay-signet-node is booting in custom signet mode, all services with and fulcrum will finish their setup almost immediately, as there is no blockchain to download.
+Since easepay-signet-node is booting in custom signet mode, all services  will finish their setup almost immediately, as there is no blockchain to download.
 
 ```bash
 $ docker compose up -d easepay-signet fulcrum mariadb mongo
@@ -42,9 +40,9 @@ $ docker compose up -d faucet miner mempool-api mempool-web
 
 Browse the Signet chain at http://localhost:8080
 
-### Sparrow
+### WALLET
 
-Connect your Sparrow Wallet to Electrs:
+Connect your Wallet to Fulcrum(Electrum):
 
 1. Tools > Restart in Network > Signet
 2. File > Preferences > Server > Private Electrum > localhost:60601, no SSL, no Tor proxy.
@@ -52,11 +50,11 @@ Connect your Sparrow Wallet to Electrs:
 
 ### bitcoin-cli
 
-Interact directly with the node via the command line by entering into the `knots` container and running `bitcoin-cli` with appropriate credentials:
+Interact directly with the node via the command line by entering into the `easepay-signet` container and running `bitcoin-cli` with the appropriate credentials:
 
 ```shell
-$ docker compose exec -it knots sh -l
-$ bitcoin-cli -signet -rpcuser=knots -rpcpassword=knots -getinfo
+$ docker compose exec -it easepay-signet sh -l
+$ bitcoin-cli -signet -rpcuser=easepay-signet -rpcpassword=rpcpassword -getinfo
 Chain: signet
 Blocks: 101
 Headers: 101
@@ -69,7 +67,7 @@ Time offset (s): 0
 Proxies: n/a
 Min tx relay fee rate (BTC/kvB): 0.00001000
 
-Wallet: BBO
+Wallet: custom-signet
 Keypool size: 1000
 Transaction fee rate (-paytxfee) (BTC/kvB): 0.00000000
 
