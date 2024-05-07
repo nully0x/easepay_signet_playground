@@ -1,6 +1,4 @@
 version: '3.8'
-name: Easepay_signet
-
 services:
   easepay-signet:
     image: elyanekenimoh/easepay-signet-node
@@ -59,7 +57,7 @@ services:
     image: mempool/backend:v3.0.0-dev8
     environment:
       - CORE_RPC_HOST=easepay-signet
-      - CORE_RPC_PASSWORD=Beautifulgirl456
+      - CORE_RPC_PASSWORD=$(RPCPASSWORD}
       - CORE_RPC_PORT=38332
       - CORE_RPC_USERNAME=easepay-signet
       - DATABASE_DATABASE=mempool
@@ -107,6 +105,6 @@ services:
 
 volumes:
   fulcrum_data:
-  easepay-signet_data:
+  easepay_signet_data:
   mariadb_data:
   mongo_data:
