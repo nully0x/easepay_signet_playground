@@ -1,5 +1,5 @@
 # easepay_signet_playground
-A dockerized, self-contained signet not for testing bitcoin Applications:  Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) to study how it works.
+A dockerized, self-contained signet node for testing bitcoin Applications:  Bitcoin [Signet network](https://en.bitcoin.it/wiki/Signet) to study how it works.
 
 ## Requirements
 
