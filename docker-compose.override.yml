@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  easepay-signet:
+    ports:
+      - "28332:28332" # ZMQ block publish port
+      - "28333:28333" # ZMQ transaction publish port
+      - "28334:28334"
+      - "38332:38332" # RPC port
+      - "38333:38333"
+      - "38334:38334" 
