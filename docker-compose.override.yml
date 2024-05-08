@@ -4,7 +4,8 @@ services:
     ports:
       - "28332:28332" # ZMQ block publish port
       - "28333:28333" # ZMQ transaction publish port
-      - "28334:28334"
-      - "38332:38332" # RPC port
-      - "38333:38333"
-      - "38334:38334" 
+      - "38332:38332" # RPC port 
+  fulcrum:
+    ports:
+    - "127.0.0.1:50001:50001"
+    - "127.0.0.1:50002:50002"

@@ -18,31 +18,35 @@ services:
       - sh
       - -c
       - |
-        bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPCADDR} -signet -named createwallet wallet_name=$${WALLET_NAME} descriptors=false
-        bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPCADDR} -signet -named importprivkey $${PRIVKEY}
+        bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT} -signet -named createwallet wallet_name=$${WALLET_NAME} descriptors=false
+        bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT} -signet -named importprivkey $${PRIVKEY}
     depends_on:
       - easepay-signet
 
   miner:
     image: elyanekenimoh/easepay-signet-node
     env_file:
+      - signet.env
       - miner.env
     entrypoint:
       - sh
       - -c
-      - miner --cli="bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_ADDR}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
+      - miner --cli="bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
+
     restart: on-failure
+    depends_on:
+      - easepay-signet
 
   fulcrum:
     image: cculianu/fulcrum:latest
-    command: --conf /etc/fulcrum.conf
-    ports:
-      - 127.0.0.1:50001:50001
-      - 127.0.0.1:50002:50002
-    restart: on-failure
+    ports: []
+    depends_on: [easepay-signet]
     volumes:
       - ./fulcrum.conf:/etc/fulcrum.conf
       - fulcrum_data:/var/lib/fulcrum
+    env_file:
+      - signet.env
+    command: ['Fulcrum', '-c', '/etc/fulcrum.conf', '-b', 'tcp://easepay-signet:38332']
 
   mempool-web:
     image: mempool/frontend:v3.0.0-dev8
@@ -57,7 +61,7 @@ services:
     image: mempool/backend:v3.0.0-dev8
     environment:
       - CORE_RPC_HOST=easepay-signet
-      - CORE_RPC_PASSWORD=$(RPCPASSWORD}
+      - CORE_RPC_PASSWORD=Beautifulgirl456
       - CORE_RPC_PORT=38332
       - CORE_RPC_USERNAME=easepay-signet
       - DATABASE_DATABASE=mempool
