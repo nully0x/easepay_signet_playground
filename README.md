@@ -25,7 +25,7 @@ $ docker compose up knots electrs mariadb mongo
 ```
 allowing "you to see all the logs for easy debugging incase everything doesn't work well."
 
-Now run a one-time process that will store in easepay-signet' wallet the private key that is used for the signet challenge:
+Now run a one-time process that will store in knots' wallet the private key that is used for the signet challenge:
 
 ```bash
 $ docker compose run --rm wallet-setup
