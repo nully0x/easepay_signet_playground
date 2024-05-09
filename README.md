@@ -16,19 +16,25 @@ Start easepay-signet-node, Electrum(fulcrum), MariaDB and MongoDB.
 Since easepay-signet-node is booting in custom signet mode, all services  will finish their setup almost immediately, as there is no blockchain to download.
 
 ```bash
-$ docker compose up -d easepay-signet fulcrum mariadb mongo
+$ docker compose up -d knots electrs mariadb mongo
 ```
+or 
+
+```bash
+$ docker compose up knots electrs mariadb mongo
+```
+allowing "you to see all the logs for easy debugging incase everything doesn't work well."
 
 Now run a one-time process that will store in easepay-signet' wallet the private key that is used for the signet challenge:
 
 ```bash
 $ docker compose run --rm wallet-setup
 {
-  "name": "custom-signet"
+  "name": "GEO"
 }
 ```
 
-With the private key stored in easepay you can now start the faucet, miner and mempool processes:
+With the private key stored in knots you can now start the faucet, miner and mempool processes:
 
 ```bash
 $ docker compose up -d faucet miner mempool-api mempool-web
@@ -42,7 +48,7 @@ Browse the Signet chain at http://localhost:8080
 
 ### WALLET
 
-Connect your Wallet to Fulcrum(Electrum):
+Connect your Wallet to Fulcrum/electrs(Electrum):
 
 1. Tools > Restart in Network > Signet
 2. File > Preferences > Server > Private Electrum > localhost:60601, no SSL, no Tor proxy.
@@ -50,11 +56,11 @@ Connect your Wallet to Fulcrum(Electrum):
 
 ### bitcoin-cli
 
-Interact directly with the node via the command line by entering into the `easepay-signet` container and running `bitcoin-cli` with the appropriate credentials:
+Interact directly with the node via the command line by entering into the `knots` container and running `bitcoin-cli` with the appropriate credentials:
 
 ```shell
-$ docker compose exec -it easepay-signet sh -l
-$ bitcoin-cli -signet -rpcuser=easepay-signet -rpcpassword=rpcpassword -getinfo
+$ docker compose exec -it knots sh -l
+$ bitcoin-cli -signet -rpcuser=rpcuser -rpcpassword=rpcpassword -getinfo
 Chain: signet
 Blocks: 101
 Headers: 101
@@ -67,7 +73,7 @@ Time offset (s): 0
 Proxies: n/a
 Min tx relay fee rate (BTC/kvB): 0.00001000
 
-Wallet: custom-signet
+Wallet: GEO
 Keypool size: 1000
 Transaction fee rate (-paytxfee) (BTC/kvB): 0.00000000
 

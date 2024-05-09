@@ -1,44 +1,51 @@
-version: '3.8'
+version: '3'
 services:
-  easepay-signet:
-    image: elyanekenimoh/easepay-signet-node
-    command: run.sh
+  knots:
+    image: 1maa/bitcoin:v26.1.knots20240325
+    command: -conf=/etc/knots.conf
+    restart: on-failure
     volumes:
-      - easepay_signet_data:/root/.bitcoin
-      - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
-    env_file:
-      - signet.env
-    restart: on-failure  # Ensures the container restarts if it exits due to an error
+      - ./knots.conf:/etc/knots.conf
+      - knots_data:/home/bitcoin/.bitcoin
 
   wallet-setup:
-    image: elyanekenimoh/easepay-signet-node
-    env_file:
-      - wallet_setup.env
+    image: 1maa/bitcoin:v26.1.knots20240325
+    environment:
+      - PRIVATE_KEY=cRWA13VYwVPgkUTGMTxjeoLvsFd9TnH8BYQtyMVpjsn3N5SSitEg
+      - RPC_ADDR=knots
+      - RPC_PWD=easepay
+      - RPC_USER=easepay
+      - WALLET_NAME=GEO
     entrypoint:
       - sh
       - -c
       - |
-        bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT} -signet -named createwallet wallet_name=$${WALLET_NAME} descriptors=false
-        bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT} -signet -named importprivkey $${PRIVKEY}
+        bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR} -signet -named createwallet wallet_name=$${WALLET_NAME} descriptors=false
+        bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR} -signet -named importprivkey $${PRIVATE_KEY}
 
   miner:
-    image: elyanekenimoh/easepay-signet-node
-    env_file:
-      - miner.env
+    image: 1maa/signet-miner:latest
+    environment:
+      - MINING_DIFFICULTY=1d00ffff
+      - REWARDS_BTC_ADDRESS=mty3Xnn8JhUAxNN9kzX33eCD3e5zZCnQWJ
+      - RPC_ADDR=knots
+      - RPC_PWD=easepay
+      - RPC_USER=easepay
     entrypoint:
       - sh
       - -c
-      - miner --cli="bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
+      - miner --cli="bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
     restart: on-failure
 
-  fulcrum:
-    image: cculianu/fulcrum:latest
-    ports: []
-    depends_on: [easepay-signet]
+  electrs:
+    image: 1maa/electrs:latest
+    command: --conf /etc/electrs.conf
+    ports:
+      - 127.0.0.1:60601:60601
+    restart: on-failure
     volumes:
-      - ./fulcrum.conf:/etc/fulcrum.conf
-      - fulcrum_data:/var/lib/fulcrum
-    command: ['Fulcrum', '-c', '/etc/fulcrum.conf', '-b', 'tcp://easepay-signet:38332']
+      - ./electrs.conf:/etc/electrs.conf
+      - electrs_data:/var/lib/electrs
 
   mempool-web:
     image: mempool/frontend:v3.0.0-dev8
@@ -52,17 +59,17 @@ services:
   mempool-api:
     image: mempool/backend:v3.0.0-dev8
     environment:
-      - CORE_RPC_HOST=easepay-signet
-      - CORE_RPC_PASSWORD=Beautifulgirl456
+      - CORE_RPC_HOST=knots
+      - CORE_RPC_PASSWORD=easepay
       - CORE_RPC_PORT=38332
-      - CORE_RPC_USERNAME=easepay-signet
+      - CORE_RPC_USERNAME=easepay
       - DATABASE_DATABASE=mempool
       - DATABASE_ENABLED=true
       - DATABASE_HOST=mariadb
       - DATABASE_PASSWORD=mempool
       - DATABASE_USERNAME=mempool
-      - ELECTRUM_HOST=fulcrum
-      - ELECTRUM_PORT=50001
+      - ELECTRUM_HOST=electrs
+      - ELECTRUM_PORT=60601
       - ELECTRUM_TLS_ENABLED=false
       - MEMPOOL_BACKEND=electrum
       - MEMPOOL_NETWORK=signet
@@ -91,16 +98,16 @@ services:
   faucet:
     image: 1maa/signet-faucet:latest
     environment:
-      - BITCOIND_HOST=easepay-signet
-      - BITCOIND_USER=easepay-signet
-      - BITCOIND_PASS=Beautifulgirl456
+      - BITCOIND_HOST=knots
+      - BITCOIND_USER=easepay
+      - BITCOIND_PASS=easepay
       - MONGODB_HOST=mongo
     ports:
       - 127.0.0.1:8123:8123
     restart: on-failure
 
 volumes:
-  fulcrum_data:
-  easepay_signet_data:
+  electrs_data:
+  knots_data:
   mariadb_data:
   mongo_data:
