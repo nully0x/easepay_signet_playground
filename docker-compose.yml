@@ -5,6 +5,7 @@ services:
     command: run.sh
     volumes:
       - easepay_signet_data:/root/.bitcoin
+      - ./bitcoin.conf:/root/.bitcoin/bitcoin.conf
     env_file:
       - signet.env
     restart: on-failure  # Ensures the container restarts if it exits due to an error
@@ -12,7 +13,6 @@ services:
   wallet-setup:
     image: elyanekenimoh/easepay-signet-node
     env_file:
-      - signet.env
       - wallet_setup.env
     entrypoint:
       - sh
@@ -20,22 +20,16 @@ services:
       - |
         bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT} -signet -named createwallet wallet_name=$${WALLET_NAME} descriptors=false
         bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT} -signet -named importprivkey $${PRIVKEY}
-    depends_on:
-      - easepay-signet
 
   miner:
     image: elyanekenimoh/easepay-signet-node
     env_file:
-      - signet.env
       - miner.env
     entrypoint:
       - sh
       - -c
       - miner --cli="bitcoin-cli -rpcuser=$${RPCUSER} -rpcpassword=$${RPCPASSWORD} -rpcconnect=$${RPC_HOST}:$${RPC_PORT}" generate --address $${REWARDS_BTC_ADDRESS} --grind-cmd="bitcoin-util grind" --nbits=$${MINING_DIFFICULTY} --ongoing
-
     restart: on-failure
-    depends_on:
-      - easepay-signet
 
   fulcrum:
     image: cculianu/fulcrum:latest
@@ -44,8 +38,6 @@ services:
     volumes:
       - ./fulcrum.conf:/etc/fulcrum.conf
       - fulcrum_data:/var/lib/fulcrum
-    env_file:
-      - signet.env
     command: ['Fulcrum', '-c', '/etc/fulcrum.conf', '-b', 'tcp://easepay-signet:38332']
 
   mempool-web:
