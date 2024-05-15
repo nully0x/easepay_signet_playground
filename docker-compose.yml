@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   knots:
     image: 1maa/bitcoin:v26.1.knots20240325
@@ -7,9 +7,6 @@ services:
     volumes:
       - ./knots.conf:/etc/knots.conf
       - knots_data:/home/bitcoin/.bitcoin
-
-  wallet-setup:
-    image: 1maa/bitcoin:v26.1.knots20240325
     environment:
       - PRIVATE_KEY=cRWA13VYwVPgkUTGMTxjeoLvsFd9TnH8BYQtyMVpjsn3N5SSitEg
       - RPC_ADDR=knots
@@ -20,9 +17,11 @@ services:
       - sh
       - -c
       - |
+        bitcoind -conf=/etc/knots.conf &
+        sleep 5
         bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR} -signet -named createwallet wallet_name=$${WALLET_NAME} descriptors=false
         bitcoin-cli -rpcuser=$${RPC_USER} -rpcpassword=$${RPC_PWD} -rpcconnect=$${RPC_ADDR} -signet -named importprivkey $${PRIVATE_KEY}
-
+        wait
   miner:
     image: 1maa/signet-miner:latest
     environment:
@@ -47,14 +46,24 @@ services:
       - ./electrs.conf:/etc/electrs.conf
       - electrs_data:/var/lib/electrs
 
-  mempool-web:
-    image: mempool/frontend:v3.0.0-dev8
+  mariadb:
+    image: mariadb:11.3
     environment:
-      - BACKEND_MAINNET_HTTP_HOST=mempool-api
-      - FRONTEND_HTTP_PORT=8080
+      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
+      - MARIADB_DATABASE=mempool
+      - MARIADB_PASSWORD=mempool
+      - MARIADB_USER=mempool
+    volumes:
+      - mariadb_data:/var/lib/mysql
     ports:
-      - 127.0.0.1:8080:8080
+      - 127.0.0.1:3306:3306
     restart: on-failure
+
+  mongo:
+    image: mongo:7.0
+    restart: on-failure
+    volumes:
+      - mongo_data:/data
 
   mempool-api:
     image: mempool/backend:v3.0.0-dev8
@@ -75,25 +84,21 @@ services:
       - MEMPOOL_NETWORK=signet
       - STATISTICS_ENABLED=false
     restart: on-failure
+    depends_on:
+      - knots
+      - mariadb
+      - electrs
 
-  mariadb:
-    image: mariadb:11.3
+  mempool-web:
+    image: mempool/frontend:v3.0.0-dev8
     environment:
-      - MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=true
-      - MARIADB_DATABASE=mempool
-      - MARIADB_PASSWORD=mempool
-      - MARIADB_USER=mempool
-    volumes:
-      - mariadb_data:/var/lib/mysql
+      - BACKEND_MAINNET_HTTP_HOST=mempool-api
+      - FRONTEND_HTTP_PORT=8080
     ports:
-      - 127.0.0.1:3306:3306
+      - 127.0.0.1:8080:8080
     restart: on-failure
-
-  mongo:
-    image: mongo:7.0
-    restart: on-failure
-    volumes:
-      - mongo_data:/data
+    depends_on:
+      - mempool-api
 
   faucet:
     image: 1maa/signet-faucet:latest
