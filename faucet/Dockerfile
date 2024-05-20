@@ -6,6 +6,4 @@ ENV BITCOIND_USER=easepay
 ENV BITCOIND_PASS=easepay
 ENV MONGODB_HOST=mongo
 
-EXPOSE 8123
-
-CMD ["npm", "start"]
+EXPOSE 8123/tcp
