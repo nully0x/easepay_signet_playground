@@ -4,6 +4,9 @@ services:
     restart: on-failure
     volumes:
       - knots_data:/home/bitcoin/.bitcoin
+    ports:
+      - 0.0.0.0:38332:38332
+
   miner:
     build: ./miner
     restart: on-failure
