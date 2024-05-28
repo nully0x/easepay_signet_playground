@@ -9,4 +9,4 @@ ENV RPC_PWD=easepay
 ENV RPC_USER=easepay
 ENV WALLET_NAME=GEO
 
-ENTRYPOINT ["sh", "-c", "bitcoind -conf=/etc/knots.conf & sleep 5 && bitcoin-cli -rpcuser=$RPC_USER -rpcpassword=$RPC_PWD -rpcconnect=$RPC_ADDR -signet -named createwallet wallet_name=$WALLET_NAME descriptors=false && bitcoin-cli -rpcuser=$RPC_USER -rpcpassword=$RPC_PWD -rpcconnect=$RPC_ADDR -signet -named importprivkey $PRIVATE_KEY && wait"]
+ENTRYPOINT ["sh", "-c", "bitcoind -conf=/etc/knots.conf & sleep 5 && bitcoin-cli -rpcuser=$RPC_USER -rpcpassword=$RPC_PWD -rpcconnect=$RPC_ADDR -signet -named createwallet wallet_name=$WALLET_NAME descriptors=false && bitcoin-cli -rpcuser=$RPC_USER -rpcpassword=$RPC_PWD -rpcconnect=$RPC_ADDR -signet -named importprivkey privkey=$PRIVATE_KEY && WALLET_ADDRESS=$(bitcoin-cli -rpcuser=$RPC_USER -rpcpassword=$RPC_PWD -rpcconnect=$RPC_ADDR -signet -named getnewaddress) && echo 'The private key for the address is:' && bitcoin-cli -rpcuser=$RPC_USER -rpcpassword=$RPC_PWD -rpcconnect=$RPC_ADDR -signet -named dumpprivkey address=$WALLET_ADDRESS && wait"]
