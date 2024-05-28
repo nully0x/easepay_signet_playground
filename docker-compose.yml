@@ -18,6 +18,8 @@ services:
     restart: on-failure
     volumes:
       - electrs_data:/data
+    ports:
+      - 60600:60601
 
   mariadb:
     build: ./mariadb

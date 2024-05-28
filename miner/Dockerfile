@@ -2,7 +2,7 @@
 FROM 1maa/signet-miner:latest
 
 ENV MINING_DIFFICULTY=1d00ffff
-ENV REWARDS_BTC_ADDRESS=mty3Xnn8JhUAxNN9kzX33eCD3e5zZCnQWJ
+ENV REWARDS_BTC_ADDRESS=tb1qf5fgspgkusy7n3xp75kx77ml2u4czs62kc9zvg
 ENV RPC_ADDR=knots
 ENV RPC_PWD=easepay
 ENV RPC_USER=easepay
