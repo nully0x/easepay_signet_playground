@@ -8,7 +8,7 @@ services:
       - 0.0.0.0:38332:38332
 
   miner:
-    build: ./miner-prod
+    build: ./miner
     restart: on-failure
     volumes:
       - knots_data:/home/bitcoin/.bitcoin
@@ -72,6 +72,12 @@ services:
       - MONGODB_HOST=mongo
     ports:
       - 0.0.0.0:8123:8123
+    restart: on-failure
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
     restart: on-failure
 
 volumes:
