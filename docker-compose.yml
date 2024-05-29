@@ -74,6 +74,12 @@ services:
       - 0.0.0.0:8123:8123
     restart: on-failure
 
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+    restart: on-failure
+
 volumes:
   electrs_data:
   knots_data:
