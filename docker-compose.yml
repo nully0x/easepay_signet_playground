@@ -75,7 +75,7 @@ services:
     restart: on-failure
 
   nginx:
-    build: ./nginx
+    build: ./nginx-prod
     ports:
       - 80:80
     restart: on-failure
