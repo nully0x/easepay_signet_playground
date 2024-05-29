@@ -1,6 +1,6 @@
 services:
   knots:
-    build: ./knots
+    build: ./knots-prod
     restart: on-failure
     volumes:
       - knots_data:/home/bitcoin/.bitcoin
@@ -19,7 +19,7 @@ services:
     volumes:
       - electrs_data:/data
     ports:
-      - 60601:60600
+      - 60600:60601
 
   mariadb:
     build: ./mariadb
