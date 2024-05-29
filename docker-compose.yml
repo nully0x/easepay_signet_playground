@@ -19,7 +19,7 @@ services:
     volumes:
       - electrs_data:/data
     ports:
-      - 60600:60601
+      - 60601:60600
 
   mariadb:
     build: ./mariadb
