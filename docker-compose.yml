@@ -13,13 +13,15 @@ services:
     volumes:
       - knots_data:/home/bitcoin/.bitcoin
 
-  electrs:
-    build: ./electrs
+  fulcrum:
+    build: ./fulcrum
     restart: on-failure
+    ports: 
+      - 50001:50001
     volumes:
-      - electrs_data:/data
-    ports:
-      - 60600:60601
+      - fulcrum_data:/data
+    depends_on:
+      - knots
 
   mariadb:
     build: ./mariadb
