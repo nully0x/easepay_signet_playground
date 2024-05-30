@@ -17,7 +17,7 @@ services:
     build: ./fulcrum
     restart: on-failure
     ports: 
-      - 50001:50001
+      - 0.0.0.0:50001:50001
     volumes:
       - fulcrum_data:/data
     depends_on:
@@ -47,8 +47,8 @@ services:
       - DATABASE_HOST=mariadb
       - DATABASE_PASSWORD=mempool
       - DATABASE_USERNAME=mempool
-      - ELECTRUM_HOST=electrs
-      - ELECTRUM_PORT=60601
+      - ELECTRUM_HOST=fulcrum
+      - ELECTRUM_PORT=50001
       - ELECTRUM_TLS_ENABLED=false
       - MEMPOOL_BACKEND=electrum
       - MEMPOOL_NETWORK=signet

@@ -17,7 +17,7 @@ services:
     build: ./fulcrum
     restart: on-failure
     ports: 
-      - 50001:50001
+      - 0.0.0.0:50001:50001
     volumes:
       - fulcrum_data:/data
     depends_on:
