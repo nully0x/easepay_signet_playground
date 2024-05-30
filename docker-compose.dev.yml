@@ -87,3 +87,4 @@ volumes:
   knots_data:
   mariadb_data:
   mongo_data:
+  fulcrum_data:
